@@ -1,0 +1,23 @@
+{
+  "name": "repobar",
+  "version": "0.0.1",
+  "description": "a electron app with react",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron .",
+    "start:dev": "npx electronmon ."
+  },
+  "keywords": [
+    "electron",
+    "reactjs"
+  ],
+  "author": "SteeveeG",
+  "license": "MIT",
+  "dependencies": {
+    "electron": "^33.2.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "zustand": "^5.0.3"
+  }
+}
