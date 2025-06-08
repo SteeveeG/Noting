@@ -2,7 +2,12 @@ import  { useState, createContext } from 'react';
 import css from './home.module.css';
 import Canvas from '../../components/Canvas/Canvas.jsx';
 
-export const TextContext = createContext();
+export const TextContext = createContext(
+  {
+    texts: [],
+    setTexts: () => {},
+  }
+);
 
 function home() {
   const [texts, setTexts] = useState([
@@ -11,7 +16,7 @@ function home() {
   ]);
 
   function addText() {
-    setTexts([...texts, { content: "Neuer Text", x: 100, y: 150 }]);
+    setTexts([...texts, { content: "Text", x: 100, y: 150 }]);
   }
 
   function removeLastText() {

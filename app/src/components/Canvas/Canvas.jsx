@@ -2,15 +2,14 @@ import React, { useRef, useEffect, useState, useContext } from 'react';
 import TextField from "../textfield/textfield.jsx";
 import { TextContext } from '../../Pages/home/home.jsx';
 
-
 const Canvas = () => {
-  const {texts, setTexts } = useContext(TextContext);
+  const { texts, setTexts } = useContext(TextContext);
 
   const canvasRef = useRef(null);
-  const tooltipRef = useRef(null);
   const [tooltip, setTooltip] = useState({ x: 0, y: 0, visible: false });
   const [dragIndex, setDragIndex] = useState(null);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
+
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -35,24 +34,44 @@ const Canvas = () => {
     }
   }, []);
 
-  const handleMouseMove = (e) => {
-    const rect = canvasRef.current.getBoundingClientRect();
-    const x = Math.floor(e.clientX - rect.left);
-    const y = Math.floor(e.clientY - rect.top);
-    setTooltip({ x, y, visible: true });
-  };
-
-  const handleMouseLeave = () => {
-    setTooltip(prev => ({ ...prev, visible: false }));
-  };
 
   const dragText = (e, index) => {
-    const rect = e.target.getBoundingClientRect();
+
+    const rect = e.currentTarget.getBoundingClientRect();
     setDragIndex(index);
     setOffset({
       x: e.clientX - rect.left,
       y: e.clientY - rect.top,
     });
+  };
+
+
+  const handleMouseMove = (e) => {
+    const rect = canvasRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    if (dragIndex !== null) {
+      const updatedTexts = [...texts];
+      updatedTexts[dragIndex] = {
+        ...updatedTexts[dragIndex],
+        x: x - offset.x,
+        y: y - offset.y,
+      };
+      setTexts(updatedTexts);
+    }
+
+    setTooltip({ x: Math.floor(x), y: Math.floor(y), visible: true });
+  };
+
+
+  const handleMouseUp = () => {
+    setDragIndex(null);
+  };
+
+  const handleMouseLeave = () => {
+    setTooltip((prev) => ({ ...prev, visible: false }));
+    setDragIndex(null);
   };
 
   return (
@@ -63,33 +82,35 @@ const Canvas = () => {
         border: "1px solid black",
         position: "relative",
       }}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseLeave}
     >
       <canvas
         ref={canvasRef}
         width={1500}
         height={1000}
         style={{ position: "absolute", top: 0, left: 0 }}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
       />
-      {texts?.map((content, index) => (
+
+      {texts.map((text, index) => (
         <div
           key={index}
           onMouseDown={(e) => dragText(e, index)}
           style={{
             position: "absolute",
-            left: content.x,
-            top: content.y,
+            left: text.x,
+            top: text.y,
+            cursor: "move",
+            zIndex: dragIndex === index ? 1000 : 1,
           }}
         >
-          <TextField content={content.content} />
+          <TextField content={text.content} />
         </div>
       ))}
 
-
       {tooltip.visible && (
         <div
-          ref={tooltipRef}
           style={{
             position: "absolute",
             left: tooltip.x + 10,
