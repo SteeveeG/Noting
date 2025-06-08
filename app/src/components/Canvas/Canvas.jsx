@@ -1,27 +1,23 @@
 import React, { useRef, useEffect, useState, useContext } from 'react';
-import TextField from "../textfield/textfield";
-import { textContext } from '../../pages/home/home.jsx'; // passe den Pfad ggf. an
+import TextField from "../textfield/textfield.jsx";
+import { TextContext } from '../../Pages/home/home.jsx';
 
 
-
-const canvas = () => {
-
-  const { texts, setTexts } = useContext(textContext);
-
-
+const Canvas = () => {
+  const {texts, setTexts } = useContext(TextContext);
 
   const canvasRef = useRef(null);
   const tooltipRef = useRef(null);
   const [tooltip, setTooltip] = useState({ x: 0, y: 0, visible: false });
-
-
+  const [dragIndex, setDragIndex] = useState(null);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
 
-    // Raster zeichnen (alle 100px)
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
     for (let x = 0; x <= canvas.width; x += 100) {
       ctx.beginPath();
       ctx.moveTo(x, 0);
@@ -39,29 +35,24 @@ const canvas = () => {
     }
   }, []);
 
-  const [dragIndex, setDragIndex] = useState(null);
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const handleMouseMove = (e) => {
+    const rect = canvasRef.current.getBoundingClientRect();
+    const x = Math.floor(e.clientX - rect.left);
+    const y = Math.floor(e.clientY - rect.top);
+    setTooltip({ x, y, visible: true });
+  };
 
-  function dragText (e, index) {
+  const handleMouseLeave = () => {
+    setTooltip(prev => ({ ...prev, visible: false }));
+  };
+
+  const dragText = (e, index) => {
     const rect = e.target.getBoundingClientRect();
     setDragIndex(index);
     setOffset({
       x: e.clientX - rect.left,
       y: e.clientY - rect.top,
     });
-  }
-
-  const handleMouseMove = (e) => {
-    const canvas = canvasRef.current;
-    const rect = canvas.getBoundingClientRect();
-    const x = Math.floor(e.clientX - rect.left);
-    const y = Math.floor(e.clientY - rect.top);
-
-    setTooltip({ x, y, visible: true });
-  };
-
-  const handleMouseLeave = () => {
-    setTooltip((prev) => ({ ...prev, visible: false }));
   };
 
   return (
@@ -81,18 +72,18 @@ const canvas = () => {
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
       />
-
-
-      {texts.map((content, index) => (
-        <div key={index}  onMouseDown={(e) => dragText(e, index)}
-             style={{
-               position: "absolute",
-               left: texts.x,
-               top: texts.y
-             }}>
-          <TextField  content={content}  />
+      {texts?.map((content, index) => (
+        <div
+          key={index}
+          onMouseDown={(e) => dragText(e, index)}
+          style={{
+            position: "absolute",
+            left: content.x,
+            top: content.y,
+          }}
+        >
+          <TextField content={content.content} />
         </div>
-
       ))}
 
 
@@ -113,12 +104,8 @@ const canvas = () => {
           x: {tooltip.x}, y: {tooltip.y}
         </div>
       )}
-
-
-
-
     </div>
   );
 };
 
-export default canvas;
+export default Canvas;
