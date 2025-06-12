@@ -36,7 +36,6 @@ const Canvas = () => {
 
 
   const dragText = (e, index) => {
-
     const rect = e.currentTarget.getBoundingClientRect();
     setDragIndex(index);
     setOffset({
@@ -96,13 +95,17 @@ const Canvas = () => {
       {texts.map((text, index) => (
         <div
           key={index}
-          onMouseDown={(e) => dragText(e, index)}
+          onMouseDown={(e) => {
+            // Nur starten, wenn auf das Drag-Handle geklickt wurde
+            if (e.target.dataset.dragHandle !== undefined) {
+              dragText(e, index);
+            }
+          }}
           style={{
-            position: "absolute",
+            position: 'absolute',
             left: text.x,
             top: text.y,
-            cursor: "move",
-            zIndex: dragIndex === index ? 1000 : 1,
+            zIndex: dragIndex === index ? 1000 : 1
           }}
         >
           <TextField content={text.content} />
@@ -112,17 +115,17 @@ const Canvas = () => {
       {tooltip.visible && (
         <div
           style={{
-            position: "absolute",
+            position: 'absolute',
             left: tooltip.x + 10,
             top: tooltip.y + 10,
-            background: "rgba(0,0,0,0.7)",
-            color: "white",
-            padding: "4px 8px",
-            fontSize: "12px",
-            pointerEvents: "none",
+            background: 'rgba(0,0,0,0.7)',
+            color: 'white',
+            padding: '4px 8px',
+            fontSize: '12px',
+            pointerEvents: 'none'
           }}
         >
-          x: {tooltip.x}, y: {tooltip.y}
+        x: {tooltip.x}, y: {tooltip.y}
         </div>
       )}
     </div>

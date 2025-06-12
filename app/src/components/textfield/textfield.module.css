@@ -1,10 +1,26 @@
-
-
-.wrapper{
-  padding: 10px 15px;
-  border: 1px solid transparent;
+.container {
+  position: relative;
+  display: inline-block;
+  width: 200px;
+  height: auto;
 }
 
-.wrapper:hover {
-  border: 1px solid black;
+.wrapper {
+  width: 100%;
+  resize: both;
+  box-sizing: border-box;
+  padding: 8px;
+  font-size: 14px;
+}
+
+.dragHandle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: grab;
+  background: #ccc;
+  padding: 2px 6px;
+  font-size: 14px;
+  border-radius: 0 4px 0 4px;
+  user-select: none;
 }

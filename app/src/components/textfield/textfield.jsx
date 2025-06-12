@@ -1,13 +1,19 @@
-import React, { useRef, useEffect, useState } from "react";
-import css from "./textfield.module.css";
+// textfield.jsx
+import styles from './textfield.module.css';
 
-const textfield = ({content}) => {
-
+const TextField = ({ content, id }) => {
   return (
-   <>
-     <p className={css.wrapper}>{content}</p>
-   </>
+    <div className={styles.container}>
+      <div className={styles.dragHandle} data-drag-handle>
+        ⠿
+      </div>
+      <textarea
+        className={styles.wrapper}
+        defaultValue={content}
+        id={id}
+      />
+    </div>
   );
 };
 
-export default textfield;
+export default TextField;
