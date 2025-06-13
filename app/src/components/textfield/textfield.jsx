@@ -1,14 +1,13 @@
-// textfield.jsx
-import styles from './textfield.module.css';
+import css from './textfield.module.css';
 
 const TextField = ({ content, id }) => {
   return (
-    <div className={styles.container}>
-      <div className={styles.dragHandle} data-drag-handle>
+    <div className={css.container}>
+      <div className={css.dragHandle} data-drag-handle>
         ⠿
       </div>
       <textarea
-        className={styles.wrapper}
+        className={css.wrapper}
         defaultValue={content}
         id={id}
       />
