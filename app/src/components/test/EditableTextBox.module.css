@@ -8,13 +8,16 @@
   min-width: 100px;
   min-height: 30px;
   padding: 4px;
-  
+  box-sizing: border-box;
+  position: relative;
 }
 
 .resizeBox {
   border: 1px solid #3b82f6; 
   resize: both;
-  overflow: auto;
+  overflow: hidden;
+  min-width: 100px;
+  min-height: 30px;
 }
 
 .textarea {
@@ -28,9 +31,31 @@
   font-size: inherit;
   line-height: inherit;
   cursor: pointer;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  transition: text-decoration 0.1s ease;
 }
  
-.click:hover{
-  text-decoration: underline !important;
+.textarea::-webkit-scrollbar {
+  display: none;
+}
+
+.textarea:focus {
+  cursor: text;
+  overflow: visible;
+}
+
+.click {
+  cursor: pointer;
+}
+
+.hover {
+  text-decoration: underline;
 }
  

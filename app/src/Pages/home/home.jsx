@@ -1,6 +1,7 @@
-import  { useState, createContext } from 'react';
+import { useState, createContext } from 'react';
 import css from './home.module.css';
 import Canvas from '../../components/Canvas/Canvas.jsx';
+import { TEXT_DEFAULTS } from '../../constants/canvasConstants';
 
 export const TextContext = createContext(
   {
@@ -9,27 +10,54 @@ export const TextContext = createContext(
   }
 );
 
-function home() {
+function Home() {
   const [texts, setTexts] = useState([
-    { content: "Hallo!", x: 100, y: 150 },
-    { content: "Drag mich!", x: 300, y: 250 },
+    { 
+      id: 1,
+      content: "Hallo!", 
+      x: TEXT_DEFAULTS.X, 
+      y: TEXT_DEFAULTS.Y, 
+      width: TEXT_DEFAULTS.WIDTH, 
+      height: TEXT_DEFAULTS.HEIGHT 
+    },
+    { 
+      id: 2,
+      content: "Drag mich!", 
+      x: 300, 
+      y: 250, 
+      width: TEXT_DEFAULTS.WIDTH, 
+      height: TEXT_DEFAULTS.HEIGHT 
+    },
   ]);
 
-  function addText() {
-    setTexts([...texts, { content: "Text", x: 100, y: 150 }]);
-  }
+  const addText = () => {
+    const newId = Math.max(...texts.map(t => t.id), 0) + 1;
+    const newText = {
+      id: newId,
+      content: TEXT_DEFAULTS.CONTENT, 
+      x: TEXT_DEFAULTS.X, 
+      y: TEXT_DEFAULTS.Y, 
+      width: TEXT_DEFAULTS.WIDTH, 
+      height: TEXT_DEFAULTS.HEIGHT
+    };
+    setTexts([...texts, newText]);
+  };
 
-  function removeLastText() {
-    setTexts(texts.slice(0, -1));
-  }
+  const removeLastText = () => {
+    if (texts.length > 0) {
+      setTexts(texts.slice(0, -1));
+    }
+  };
 
   return (
     <>
-      <p>home</p>
+      <h1>Text Canvas Editor</h1>
       <TextContext.Provider value={{ texts, setTexts }}>
         <div className={css.wrapp}>
-          <button onClick={addText}>add text</button>
-          <button onClick={removeLastText}>Remove Last Text</button>
+          <button onClick={addText}>Add Text</button>
+          <button onClick={removeLastText} disabled={texts.length === 0}>
+            Remove Last Text
+          </button>
         </div>
         <Canvas />
       </TextContext.Provider>
@@ -37,4 +65,4 @@ function home() {
   );
 }
 
-export default home;
+export default Home;

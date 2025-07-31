@@ -1,0 +1,51 @@
+{
+  "project": {
+    "name": "Noting",
+    "type": "electron-react",
+    "description": "Canvas-based text editor with drag-and-drop functionality"
+  },
+  "agents": {
+    "primary": "react-canvas-specialist",
+    "available": [
+      {
+        "name": "react-canvas-specialist",
+        "description": "Specialized in React canvas applications and Electron integration",
+        "file": "agents/react-canvas-specialist.md"
+      }
+    ]
+  },
+  "contexts": [
+    {
+      "name": "canvas-system",
+      "description": "Canvas coordinate system and architecture",
+      "file": "contexts/canvas-system.md"
+    }
+  ],
+  "workflows": [
+    {
+      "name": "development",
+      "description": "Standard development workflow for canvas features",
+      "file": "workflows/development.md"
+    }
+  ],
+  "commands": {
+    "dev": "npm run dev",
+    "build": "npm run build", 
+    "electron": "npm run electron",
+    "lint": "npm run lint",
+    "test": "npm run test"
+  },
+  "file_patterns": {
+    "components": "app/src/components/**/*.{js,jsx}",
+    "hooks": "app/src/hooks/**/*.{js,jsx}",
+    "pages": "app/src/Pages/**/*.{js,jsx}",
+    "styles": "app/src/**/*.module.css",
+    "constants": "app/src/constants/**/*.{js,jsx}"
+  },
+  "priorities": {
+    "performance": "high",
+    "accessibility": "high", 
+    "code_quality": "high",
+    "testing": "medium"
+  }
+}

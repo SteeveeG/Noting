@@ -1,133 +1,235 @@
-import React, { useRef, useEffect, useState, useContext } from 'react';
-import TextField from "../textfield/textfield.jsx";
+import React, { useRef, useEffect, useState, useContext, useCallback, useMemo } from 'react';
 import { TextContext } from '../../Pages/home/home.jsx';
+import styles from './Canvas.module.css';
+import { CANVAS_CONFIG } from '../../constants/canvasConstants';
+import { useCanvasInteractions } from '../../hooks/useCanvasInteractions';
+import { useCanvasMovement } from '../../hooks/useCanvasMovement';
+import { useCanvasZoom } from '../../hooks/useCanvasZoom';
+import CanvasElement from './CanvasElement';
 
-const Canvas = () => {
+const Canvas = ({ 
+  showGrid = true,
+  gridSize = CANVAS_CONFIG.GRID_SIZE,
+  minZoom = CANVAS_CONFIG.MIN_ZOOM,
+  maxZoom = CANVAS_CONFIG.MAX_ZOOM,
+  className,
+  style
+}) => {
   const { texts, setTexts } = useContext(TextContext);
-
+  
+  const containerRef = useRef(null);
   const canvasRef = useRef(null);
-  const [tooltip, setTooltip] = useState({ x: 0, y: 0, visible: false });
-  const [dragIndex, setDragIndex] = useState(null);
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
-
+  
+  const [zoom, setZoom] = useState(1);
+  const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
+  const [selectedId, setSelectedId] = useState(null);
+  const [dragState, setDragState] = useState({
+    isDragging: false,
+    isResizing: false,
+    dragIndex: null,
+    resizeHandle: null,
+    dragOffset: { x: 0, y: 0 },
+    isPanning: false,
+    lastPanPoint: { x: 0, y: 0 }
+  });
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
+    const updateDimensions = () => {
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        setDimensions({
+          width: rect.width,
+          height: rect.height
+        });
+      }
+    };
+
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+    return () => window.removeEventListener('resize', updateDimensions);
+  }, []);
+
+  const drawGrid = useCallback(() => {
+    if (!showGrid || !canvasRef.current) return;
+    
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
-
+    
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = "#e0e0e0";
+    ctx.lineWidth = 1;
 
-    for (let x = 0; x <= canvas.width; x += 100) {
+    const scaledGridSize = gridSize * zoom;
+    const startX = (-panOffset.x % scaledGridSize);
+    const startY = (-panOffset.y % scaledGridSize);
+
+    for (let x = startX; x < canvas.width; x += scaledGridSize) {
       ctx.beginPath();
       ctx.moveTo(x, 0);
       ctx.lineTo(x, canvas.height);
-      ctx.strokeStyle = "#ccc";
       ctx.stroke();
     }
 
-    for (let y = 0; y <= canvas.height; y += 100) {
+    for (let y = startY; y < canvas.height; y += scaledGridSize) {
       ctx.beginPath();
       ctx.moveTo(0, y);
       ctx.lineTo(canvas.width, y);
-      ctx.strokeStyle = "#ccc";
       ctx.stroke();
     }
+  }, [showGrid, gridSize, zoom, panOffset]);
+
+  useEffect(() => {
+    drawGrid();
+  }, [drawGrid]);
+
+  const screenToCanvas = useCallback((screenX, screenY) => {
+    if (!containerRef.current) return { x: 0, y: 0 };
+    
+    const rect = containerRef.current.getBoundingClientRect();
+    return {
+      x: (screenX - rect.left - panOffset.x) / zoom,
+      y: (screenY - rect.top - panOffset.y) / zoom
+    };
+  }, [zoom, panOffset]);
+
+  const canvasToScreen = useCallback((canvasX, canvasY) => {
+    return {
+      x: canvasX * zoom + panOffset.x,
+      y: canvasY * zoom + panOffset.y
+    };
+  }, [zoom, panOffset]);
+
+  const constrainToBounds = useCallback((x, y, width, height) => {
+    return {
+      x: Math.max(0, Math.min(x, CANVAS_CONFIG.WIDTH - width)),
+      y: Math.max(0, Math.min(y, CANVAS_CONFIG.HEIGHT - height)),
+      width: Math.max(CANVAS_CONFIG.MIN_ELEMENT_SIZE, Math.min(width, CANVAS_CONFIG.WIDTH)),
+      height: Math.max(CANVAS_CONFIG.MIN_ELEMENT_SIZE, Math.min(height, CANVAS_CONFIG.HEIGHT))
+    };
   }, []);
 
 
-  const dragText = (e, index) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    setDragIndex(index);
-    setOffset({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
+  // Use custom hooks for canvas interactions
+  const {
+    handleElementClick,
+    handleElementMouseDown,
+    handleDoubleClick,
+    handleMouseDown
+  } = useCanvasInteractions({
+    texts,
+    setTexts,
+    selectedId,
+    setSelectedId,
+    dragState,
+    setDragState,
+    zoom,
+    containerRef,
+    screenToCanvas,
+    canvasToScreen,
+    constrainToBounds
+  });
+
+  // Use custom hooks for canvas movement and zoom
+  const {
+    handleMouseMove,
+    handleMouseUp,
+    handleMouseLeave
+  } = useCanvasMovement({
+    texts,
+    setTexts,
+    dragState,
+    setDragState,
+    zoom,
+    setPanOffset,
+    containerRef,
+    screenToCanvas,
+    constrainToBounds
+  });
+
+  const {
+    handleWheel,
+    zoomToFit,
+    resetView
+  } = useCanvasZoom({
+    zoom,
+    setZoom,
+    setPanOffset,
+    containerRef,
+    screenToCanvas,
+    texts,
+    minZoom,
+    maxZoom
+  });
+
+
+  const renderedElements = useMemo(() => {
+    return texts.map((element, index) => {
+      const screenPos = canvasToScreen(element.x, element.y);
+      const isSelected = selectedId === element.id;
+      const isDragging = dragState.dragIndex === index;
+      
+      return (
+        <CanvasElement
+          key={`text-${element.id}`}
+          element={element}
+          index={index}
+          screenPos={screenPos}
+          zoom={zoom}
+          isSelected={isSelected}
+          isDragging={isDragging}
+          texts={texts}
+          setTexts={setTexts}
+          onMouseDown={handleElementMouseDown}
+          onClick={handleElementClick}
+        />
+      );
     });
-  };
-
-
-  const handleMouseMove = (e) => {
-    const rect = canvasRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    if (dragIndex !== null) {
-      const updatedTexts = [...texts];
-      updatedTexts[dragIndex] = {
-        ...updatedTexts[dragIndex],
-        x: x - offset.x,
-        y: y - offset.y,
-      };
-      setTexts(updatedTexts);
-    }
-
-    setTooltip({ x: Math.floor(x), y: Math.floor(y), visible: true });
-  };
-
-
-  const handleMouseUp = () => {
-    setDragIndex(null);
-  };
-
-  const handleMouseLeave = () => {
-    setTooltip((prev) => ({ ...prev, visible: false }));
-    setDragIndex(null);
-  };
+  }, [texts, canvasToScreen, zoom, selectedId, dragState.dragIndex, handleElementMouseDown, handleElementClick, setTexts]);
 
   return (
-    <div
-      style={{
-        width: "1500px",
-        height: "1000px",
-        border: "1px solid black",
-        position: "relative",
-      }}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseLeave}
-    >
-      <canvas
-        ref={canvasRef}
-        width={1500}
-        height={1000}
-        style={{ position: "absolute", top: 0, left: 0 }}
-      />
-
-      {texts.map((text, index) => (
-        <div
-          key={index}
-          onMouseDown={(e) => {
-            // Nur starten, wenn auf das Drag-Handle geklickt wurde
-            if (e.target.dataset.dragHandle !== undefined) {
-              dragText(e, index);
-            }
-          }}
-          style={{
-            position: 'absolute',
-            left: text.x,
-            top: text.y,
-            zIndex: dragIndex === index ? 1000 : 1
-          }}
-        >
-          <TextField content={text.content} />
+    <div className={`${styles.canvasContainer} ${className || ''}`} style={style}>
+      <div className={styles.canvasControls}>
+        <button onClick={zoomToFit} className={styles.controlButton}>
+          Fit All
+        </button>
+        <button onClick={resetView} className={styles.controlButton}>
+          Reset View
+        </button>
+        <span className={styles.zoomIndicator}>
+          {Math.round(zoom * 100)}%
+        </span>
+        <span className={styles.canvasInfo}>
+          Canvas: {CANVAS_CONFIG.WIDTH} × {CANVAS_CONFIG.HEIGHT}px
+        </span>
+      </div>
+      
+      <div
+        ref={containerRef}
+        className={styles.canvasViewport}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseLeave}
+        onWheel={handleWheel}
+        onDoubleClick={handleDoubleClick}
+        style={{ 
+          cursor: dragState.isPanning ? 'grabbing' : 
+                  dragState.isDragging ? 'move' :
+                  dragState.isResizing ? 'crosshair' : 'default' 
+        }}
+      >
+        <canvas
+          ref={canvasRef}
+          width={dimensions.width}
+          height={dimensions.height}
+          className={styles.canvasGrid}
+        />
+        
+        <div className={styles.canvasContent}>
+          {renderedElements}
         </div>
-      ))}
-
-      {tooltip.visible && (
-        <div
-          style={{
-            position: 'absolute',
-            left: tooltip.x + 10,
-            top: tooltip.y + 10,
-            background: 'rgba(0,0,0,0.7)',
-            color: 'white',
-            padding: '4px 8px',
-            fontSize: '12px',
-            pointerEvents: 'none'
-          }}
-        >
-        x: {tooltip.x}, y: {tooltip.y}
-        </div>
-      )}
+      </div>
     </div>
   );
 };
