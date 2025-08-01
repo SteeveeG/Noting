@@ -1,26 +1,150 @@
-.container {
+.textField {
   position: relative;
-  display: inline-block;
-  width: 200px;
-  height: auto;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background-color: transparent;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  color: #000000;
+  cursor: text;
+  transition: all 0.2s ease;
+  min-width: 100px;
+  min-height: 30px;
 }
 
-.wrapper {
-  width: 100%;
-  resize: both;
-  box-sizing: border-box;
-  padding: 8px;
-  font-size: 14px;
+.textField:hover {
+  border-color: #e0e0e0;
+  background-color: #fafafa;
+}
+
+.textField.editing {
+  border-color: #007acc;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 2px rgba(0, 122, 204, 0.2);
+}
+
+.textField.resizing {
+  border-color: #007acc;
 }
 
 .dragHandle {
-  position: relative;
-  top: 0;
-  right: 0;
-  cursor: grab;
-  background: #ccc;
-  padding: 2px 6px;
-  font-size: 14px;
-  border-radius: 0 4px 0 4px;
-  user-select: none;
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  width: 20px;
+  height: 20px;
+  background-color: #007acc;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  cursor: move;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 30;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.dragHandle:hover {
+  background-color: #005a9e;
+  transform: scale(1.1);
+}
+
+.textField:hover .dragHandle {
+  opacity: 1;
+}
+
+.textField.editing .dragHandle {
+  opacity: 0;
+}
+
+.textarea {
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  resize: none;
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+.textDisplay {
+  padding: 5px;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  box-sizing: border-box;
+}
+
+.resizeHandle {
+  position: absolute;
+  bottom: -6px;
+  right: -6px;
+  width: 12px;
+  height: 12px;
+  background-color: #007acc;
+  border: 1px solid #ffffff;
+  cursor: nw-resize;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 30;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.resizeHandle:hover {
+  background-color: #005a9e;
+  transform: scale(1.1);
+}
+
+.textField:hover .resizeHandle,
+.textField.editing .resizeHandle {
+  opacity: 1;
+}
+
+.deleteButton {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  background-color: #ff4444;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 30;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.deleteButton:hover {
+  background-color: #cc0000;
+  transform: scale(1.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .textField {
+    font-size: 12px;
+  }
+  
+  .dragHandle,
+  .deleteButton {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .resizeHandle {
+    width: 16px;
+    height: 16px;
+  }
 }
