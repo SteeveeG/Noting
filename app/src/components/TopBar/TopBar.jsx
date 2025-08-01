@@ -3,7 +3,7 @@ import { useApp } from '../../context/AppContext';
 import css from './TopBar.module.css';
 
 function TopBar() {
-  const { activeCategory, currentFile } = useApp();
+  const { activeCategory, getCurrentFilePath } = useApp();
 
   return (
     <div className={css.topBar}>
@@ -14,7 +14,7 @@ function TopBar() {
       
       <div className={css.centerSection}>
         <span className={css.filePath}>
-          &lt; ...{currentFile} &gt;
+          &lt; ...{getCurrentFilePath()} &gt;
         </span>
       </div>
       

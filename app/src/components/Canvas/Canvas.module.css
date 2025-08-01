@@ -3,28 +3,86 @@
   width: 100%;
   height: 100%;
   background-color: #ffffff;
-  cursor: text;
+  background-image: 
+    radial-gradient(circle at 1px 1px, rgba(0,0,0,0.03) 1px, transparent 0);
+  background-size: 20px 20px;
+  cursor: crosshair;
   overflow: hidden;
   user-select: none;
 }
 
 .canvasInstructions {
   position: absolute;
-  top: 10px;
-  left: 10px;
-  color: #999999;
-  font-size: 12px;
-  font-style: italic;
-  pointer-events: none;
-  z-index: 1;
+  top: 24px;
+  left: 24px;
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 1px solid #e1e5e9;
+  border-radius: 8px;
+  padding: 16px 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(8px);
+  z-index: 5;
+  font-family: 'Inter', 'Montserrat', sans-serif;
+  max-width: 280px;
 }
 
-.textFieldWrapper {
+.instructionTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 8px;
+}
+
+.instructionList {
+  font-size: 12px;
+  color: #6e7781;
+  line-height: 1.5;
+}
+
+.instructionList div {
+  margin-bottom: 4px;
+}
+
+.instructionList div:last-child {
+  margin-bottom: 0;
+}
+
+/* Media Upload Button */
+.mediaButton {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 48px;
+  height: 48px;
+  background-color: #d1a3d1;
+  border: none;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(209, 163, 209, 0.3);
+  transition: all 0.3s ease;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mediaButton:hover {
+  background-color: #b87db8;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(209, 163, 209, 0.4);
+}
+
+.mediaButton:active {
+  transform: translateY(0);
+}
+
+.elementWrapper {
   position: absolute;
   z-index: 10;
 }
 
-.textFieldWrapper:hover {
+.elementWrapper:hover {
   z-index: 20;
 }
 
@@ -36,3 +94,64 @@
 .react-draggable-dragging {
   z-index: 100 !important;
 }
+
+ 
+/* Responsive design */
+@media (max-width: 768px) {
+  .canvas {
+    background-size: 16px 16px;
+  }
+  
+  .canvasInstructions {
+    top: 16px;
+    left: 16px;
+    padding: 12px 16px;
+    max-width: 240px;
+  }
+  
+  .instructionTitle {
+    font-size: 13px;
+  }
+  
+  .instructionList {
+    font-size: 11px;
+  }
+  
+  .mediaButton {
+    top: 16px;
+    right: 16px;
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
+  }
+}
+
+/* Dark mode support */
+/* @media (prefers-color-scheme: dark) {
+  .canvas {
+    background-color: #0d1117;
+    background-image: 
+      radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
+  }
+  
+  .canvasInstructions {
+    background-color: rgba(13, 17, 23, 0.95);
+    border-color: #30363d;
+  }
+  
+  .instructionTitle {
+    color: #f0f6fc;
+  }
+  
+  .instructionList {
+    color: #8b949e;
+  }
+  
+  .mediaButton {
+    background-color: #b87db8;
+  }
+  
+  .mediaButton:hover {
+    background-color: #9966a3;
+  }
+} */

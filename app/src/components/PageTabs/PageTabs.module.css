@@ -1,0 +1,180 @@
+.pageTabsContainer {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  padding: 0 20px;
+  font-family: 'Montserrat', sans-serif;
+  height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.tabsList {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 100%;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background-color: #e9ecef;
+  border: 1px solid #dee2e6;
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 13px;
+  color: #495057;
+  position: relative;
+  min-width: 80px;
+  justify-content: center;
+}
+
+.tab:hover {
+  background-color: #dee2e6;
+  color: #212529;
+}
+
+.tab.active {
+  background-color: #ffffff;
+  color: #212529;
+  border-color: #d1a3d1;
+  box-shadow: 0 -2px 4px rgba(209, 163, 209, 0.1);
+  z-index: 1;
+}
+
+.tabText {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100px;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: #6c757d;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  margin-left: 4px;
+}
+
+.closeButton:hover {
+  background-color: #dc3545;
+  color: #ffffff;
+  transform: scale(1.1);
+}
+
+.addButton {
+  background-color: #d1a3d1;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  margin-left: 8px;
+}
+
+.addButton:hover {
+  background-color: #b87db8;
+  transform: scale(1.1);
+}
+
+/* Context Menu */
+.contextMenu {
+  position: fixed;
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  min-width: 160px;
+  padding: 4px 0;
+  font-size: 13px;
+}
+
+.contextMenuItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  color: #495057;
+}
+
+.contextMenuItem:hover {
+  background-color: #f8f9fa;
+  color: #212529;
+}
+
+.contextIcon {
+  width: 16px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.contextSeparator {
+  height: 1px;
+  background-color: #dee2e6;
+  margin: 4px 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .pageTabsContainer {
+    padding: 0 15px;
+    height: 36px;
+  }
+  
+  .tab {
+    padding: 6px 8px;
+    font-size: 12px;
+    min-width: 60px;
+  }
+  
+  .tabText {
+    max-width: 80px;
+  }
+  
+  .closeButton {
+    width: 14px;
+    height: 14px;
+    font-size: 12px;
+  }
+  
+  .addButton {
+    width: 20px;
+    height: 20px;
+    font-size: 14px;
+    margin-left: 6px;
+  }
+  
+  .contextMenu {
+    min-width: 140px;
+    font-size: 12px;
+  }
+  
+  .contextMenuItem {
+    padding: 6px 10px;
+  }
+}

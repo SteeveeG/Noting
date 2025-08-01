@@ -1,0 +1,277 @@
+.uploaderOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.uploaderModal {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow: hidden;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.uploaderHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e9ecef;
+  background-color: #f8f9fa;
+}
+
+.uploaderTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333333;
+  margin: 0;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #666666;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.closeButton:hover {
+  background-color: #e9ecef;
+  color: #333333;
+}
+
+.uploaderContent {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Drop Zone */
+.dropZone {
+  border: 2px dashed #d1a3d1;
+  border-radius: 8px;
+  padding: 40px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #fafafa;
+}
+
+.dropZone:hover {
+  border-color: #b87db8;
+  background-color: #f5f0f5;
+  transform: translateY(-2px);
+}
+
+.dropZoneIcon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.7;
+}
+
+.dropZoneTitle {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333333;
+  margin-bottom: 4px;
+}
+
+.dropZoneSubtitle {
+  font-size: 14px;
+  color: #666666;
+  line-height: 1.4;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+/* URL Section */
+.urlSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sectionTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 8px;
+}
+
+.urlForm {
+  display: flex;
+  gap: 8px;
+}
+
+.urlInput {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: 'Montserrat', sans-serif;
+  transition: all 0.2s ease;
+}
+
+.urlInput:focus {
+  outline: none;
+  border-color: #d1a3d1;
+  box-shadow: 0 0 0 3px rgba(209, 163, 209, 0.1);
+}
+
+.urlButton {
+  background-color: #d1a3d1;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 20px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Montserrat', sans-serif;
+  white-space: nowrap;
+}
+
+.urlButton:hover {
+  background-color: #b87db8;
+  transform: translateY(-1px);
+}
+
+/* Quick Actions */
+.quickActions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.actionButtons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.actionButton {
+  background-color: #ffffff;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 16px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Montserrat', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.actionButton:hover {
+  border-color: #d1a3d1;
+  background-color: #fafafa;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(209, 163, 209, 0.15);
+}
+
+.actionIcon {
+  font-size: 24px;
+  opacity: 0.8;
+}
+
+.actionButton span:last-child {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333333;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .uploaderModal {
+    width: 95%;
+    max-height: 90vh;
+  }
+  
+  .uploaderHeader {
+    padding: 16px 20px;
+  }
+  
+  .uploaderTitle {
+    font-size: 16px;
+  }
+  
+  .uploaderContent {
+    padding: 20px;
+    gap: 20px;
+  }
+  
+  .dropZone {
+    padding: 30px 16px;
+  }
+  
+  .dropZoneIcon {
+    font-size: 36px;
+    margin-bottom: 12px;
+  }
+  
+  .dropZoneTitle {
+    font-size: 14px;
+  }
+  
+  .dropZoneSubtitle {
+    font-size: 12px;
+  }
+  
+  .urlForm {
+    flex-direction: column;
+  }
+  
+  .actionButtons {
+    grid-template-columns: 1fr;
+  }
+  
+  .actionButton {
+    padding: 12px;
+  }
+  
+  .actionIcon {
+    font-size: 20px;
+  }
+}
+
+/* Animation for modal appearance */
+@keyframes modalAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.uploaderModal {
+  animation: modalAppear 0.3s ease-out;
+}

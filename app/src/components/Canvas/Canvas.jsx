@@ -1,32 +1,25 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useRef, useCallback } from 'react';
 import Draggable from 'react-draggable';
 import TextField from '../textfield/TextField';
+import MediaField from '../MediaField/MediaField';
+import MediaUploader from '../MediaUploader/MediaUploader';
+import { useApp } from '../../context/AppContext';
 import css from './Canvas.module.css';
 
 function Canvas() {
-  const [textFields, setTextFields] = useState([
-    {
-      id: 1,
-      content: "Montserrat ist diese Font Hier",
-      x: 50,
-      y: 50,
-      width: 250,
-      height: 40,
-      isEditing: false
-    },
-    {
-      id: 2,
-      content: "Drag mich!",
-      x: 300,
-      y: 150,
-      width: 200,
-      height: 40,
-      isEditing: false
-    }
-  ]);
+  const { 
+    activeCategory,
+    activePage,
+    getCurrentPageElements,
+    updateCurrentPageElements,
+    getNextElementId
+  } = useApp();
 
   const canvasRef = useRef(null);
-  const [nextId, setNextId] = useState(3);
+  const [showMediaUploader, setShowMediaUploader] = React.useState(false);
+  const [showInstructions, setShowInstructions] = React.useState(true);
+
+  const elements = getCurrentPageElements();
 
   // Add new text field on double click
   const handleCanvasDoubleClick = useCallback((e) => {
@@ -36,77 +29,129 @@ function Canvas() {
       const y = e.clientY - rect.top;
 
       const newTextField = {
-        id: nextId,
-        content: "New Text",
-        x: x - 50,
-        y: y - 20,
-        width: 150,
-        height: 40,
+        id: getNextElementId(),
+        type: 'text',
+        content: "",
+        x: Math.max(0, x - 100),
+        y: Math.max(0, y - 30),
+        width: 200,
+        height: 60,
         isEditing: true
       };
 
-      setTextFields(prev => [...prev, newTextField]);
-      setNextId(prev => prev + 1);
+      updateCurrentPageElements([...elements, newTextField]);
+      setShowInstructions(false);
     }
-  }, [nextId]);
+  }, [elements, updateCurrentPageElements, getNextElementId]);
 
-  // Update text field position after drag
+  // Add media element
+  const handleMediaAdd = useCallback((mediaObject) => {
+    const rect = canvasRef.current.getBoundingClientRect();
+    const centerX = rect.width / 2 - mediaObject.width / 2;
+    const centerY = rect.height / 2 - mediaObject.height / 2;
+
+    const newMediaElement = {
+      id: getNextElementId(),
+      type: 'media',
+      mediaType: mediaObject.mediaType,
+      mediaSrc: mediaObject.mediaSrc,
+      mediaName: mediaObject.mediaName,
+      x: Math.max(0, centerX),
+      y: Math.max(0, centerY),
+      width: mediaObject.width,
+      height: mediaObject.height
+    };
+
+    updateCurrentPageElements([...elements, newMediaElement]);
+    setShowInstructions(false);
+  }, [elements, updateCurrentPageElements, getNextElementId]);
+
+  // Update element position after drag
   const handleDragStop = useCallback((id, data) => {
-    setTextFields(prev => 
-      prev.map(field => 
-        field.id === id 
-          ? { ...field, x: data.x, y: data.y }
-          : field
-      )
+    const updatedElements = elements.map(element => 
+      element.id === id 
+        ? { ...element, x: Math.max(0, data.x), y: Math.max(0, data.y) }
+        : element
     );
-  }, []);
+    updateCurrentPageElements(updatedElements);
+  }, [elements, updateCurrentPageElements]);
 
   // Update text field content
   const handleTextChange = useCallback((id, newContent) => {
-    setTextFields(prev => 
-      prev.map(field => 
-        field.id === id 
-          ? { ...field, content: newContent }
-          : field
-      )
+    const updatedElements = elements.map(element => 
+      element.id === id 
+        ? { ...element, content: newContent }
+        : element
     );
-  }, []);
+    updateCurrentPageElements(updatedElements);
+  }, [elements, updateCurrentPageElements]);
 
-  // Toggle editing mode
+  // Toggle editing mode for text fields
   const handleTextFieldClick = useCallback((id) => {
-    setTextFields(prev => 
-      prev.map(field => 
-        field.id === id 
-          ? { ...field, isEditing: true }
-          : { ...field, isEditing: false }
-      )
+    const updatedElements = elements.map(element => 
+      element.id === id 
+        ? { ...element, isEditing: true }
+        : { ...element, isEditing: false }
     );
-  }, []);
+    updateCurrentPageElements(updatedElements);
+    setShowInstructions(false);
+  }, [elements, updateCurrentPageElements]);
 
   // Stop editing when clicking outside
   const handleCanvasClick = useCallback((e) => {
     if (e.target === canvasRef.current) {
-      setTextFields(prev => 
-        prev.map(field => ({ ...field, isEditing: false }))
-      );
+      const updatedElements = elements.map(element => ({ 
+        ...element, 
+        isEditing: false 
+      }));
+      updateCurrentPageElements(updatedElements);
     }
-  }, []);
+  }, [elements, updateCurrentPageElements]);
 
-  // Delete text field
-  const handleDeleteTextField = useCallback((id) => {
-    setTextFields(prev => prev.filter(field => field.id !== id));
-  }, []);
+  // Delete element
+  const handleDeleteElement = useCallback((id) => {
+    const updatedElements = elements.filter(element => element.id !== id);
+    updateCurrentPageElements(updatedElements);
+  }, [elements, updateCurrentPageElements]);
 
-  // Resize text field
+  // Resize element
   const handleResize = useCallback((id, newWidth, newHeight) => {
-    setTextFields(prev => 
-      prev.map(field => 
-        field.id === id 
-          ? { ...field, width: newWidth, height: newHeight }
-          : field
-      )
+    const updatedElements = elements.map(element => 
+      element.id === id 
+        ? { ...element, width: newWidth, height: newHeight }
+        : element
     );
-  }, []);
+    updateCurrentPageElements(updatedElements);
+  }, [elements, updateCurrentPageElements]);
+
+  // Handle keyboard shortcuts
+  const handleKeyDown = useCallback((e) => {
+    if (e.key === 'Escape') {
+      const updatedElements = elements.map(element => ({ 
+        ...element, 
+        isEditing: false 
+      }));
+      updateCurrentPageElements(updatedElements);
+      setShowMediaUploader(false);
+    }
+    
+    // Ctrl/Cmd + I for media upload
+    if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
+      e.preventDefault();
+      setShowMediaUploader(true);
+    }
+  }, [elements, updateCurrentPageElements]);
+
+  // Add event listener for keyboard shortcuts
+  React.useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
+
+  // Reset instructions when switching pages/categories
+  React.useEffect(() => {
+    setShowInstructions(elements.length === 0);
+  }, [activeCategory, activePage, elements.length]);
 
   return (
     <div 
@@ -115,33 +160,76 @@ function Canvas() {
       onDoubleClick={handleCanvasDoubleClick}
       onClick={handleCanvasClick}
     >
-      <div className={css.canvasInstructions}>
-        Double-click to add text • Click and drag to move • Double-click text to edit
-      </div>
+      {/* Canvas Instructions */}
+      {showInstructions && (
+        <div className={css.canvasInstructions}>
+          <div className={css.instructionTitle}>
+            {activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)} - {activePage}
+          </div>
+          <div className={css.instructionList}>
+            <div>• Hover to see border and resize handles</div>
+            <div>• Drag border to move elements</div>
+            <div>• Use small squares to resize (like Word)</div>
+            <div>• Double-click canvas to add text</div>
+            <div>• Press Ctrl+I to add images/PDFs</div>
+          </div>
+        </div>
+      )}
+
+      {/* Media Upload Button */}
+      <button 
+        className={css.mediaButton}
+        onClick={() => setShowMediaUploader(true)}
+        title="Add Images/PDFs (Ctrl+I)"
+      >
+        📎
+      </button>
       
-      {textFields.map((field) => (
+      {/* Render all elements */}
+      {elements.map((element) => (
         <Draggable
-          key={field.id}
-          position={{ x: field.x, y: field.y }}
-          onStop={(e, data) => handleDragStop(field.id, data)}
+          key={element.id}
+          position={{ x: element.x, y: element.y }}
+          onStop={(e, data) => handleDragStop(element.id, data)}
           handle=".drag-handle"
-          disabled={field.isEditing}
+          disabled={element.type === 'text' && element.isEditing}
+          bounds="parent"
         >
-          <div className={css.textFieldWrapper}>
-            <TextField
-              id={field.id}
-              content={field.content}
-              width={field.width}
-              height={field.height}
-              isEditing={field.isEditing}
-              onTextChange={handleTextChange}
-              onTextFieldClick={handleTextFieldClick}
-              onDelete={handleDeleteTextField}
-              onResize={handleResize}
-            />
+          <div className={css.elementWrapper}>
+            {element.type === 'text' ? (
+              <TextField
+                id={element.id}
+                content={element.content}
+                width={element.width}
+                height={element.height}
+                isEditing={element.isEditing}
+                onTextChange={handleTextChange}
+                onTextFieldClick={handleTextFieldClick}
+                onDelete={handleDeleteElement}
+                onResize={handleResize}
+              />
+            ) : (
+              <MediaField
+                id={element.id}
+                mediaType={element.mediaType}
+                mediaSrc={element.mediaSrc}
+                mediaName={element.mediaName}
+                width={element.width}
+                height={element.height}
+                onDelete={handleDeleteElement}
+                onResize={handleResize}
+              />
+            )}
           </div>
         </Draggable>
       ))}
+
+      {/* Media Uploader Modal */}
+      <MediaUploader
+        isVisible={showMediaUploader}
+        onClose={() => setShowMediaUploader(false)}
+        onMediaAdd={handleMediaAdd}
+      />
     </div>
   );
 }

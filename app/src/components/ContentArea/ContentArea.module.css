@@ -4,6 +4,8 @@
   font-family: 'Montserrat', sans-serif;
   overflow: hidden;
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Responsive Design */

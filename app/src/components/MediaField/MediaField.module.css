@@ -1,0 +1,436 @@
+.mediaField {
+  position: relative;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  background-color: #ffffff;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  min-width: 100px;
+  min-height: 100px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.mediaField:hover {
+  border-color: #d1a3d1;
+  box-shadow: 0 2px 8px rgba(209, 163, 209, 0.2);
+}
+
+.mediaField.resizing {
+  border-color: #b87db8;
+  box-shadow: 0 0 0 2px rgba(209, 163, 209, 0.3);
+}
+
+.mediaField.dragging {
+  border-color: #b87db8;
+  box-shadow: 0 4px 12px rgba(209, 163, 209, 0.3);
+  transform: rotate(1deg);
+}
+
+/* Drag area */
+.dragArea {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  cursor: move;
+  z-index: 10;
+}
+
+/* Media content */
+.mediaContent {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 5;
+}
+
+.mediaImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 2px;
+}
+
+/* PDF Container */
+.pdfContainer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 2px;
+}
+
+.pdfIcon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  opacity: 0.8;
+}
+
+.pdfInfo {
+  text-align: center;
+  width: 100%;
+}
+
+.pdfName {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333333;
+  margin-bottom: 12px;
+  word-break: break-word;
+  line-height: 1.3;
+}
+
+.pdfActions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.pdfButton {
+  background-color: #ffffff;
+  border: 1px solid #d1a3d1;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #b87db8;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.pdfButton:hover {
+  background-color: #b87db8;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+/* Loading state */
+.loadingState {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #666666;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  background-color: #f8f9fa;
+}
+
+.loadingSpinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #e9ecef;
+  border-top: 2px solid #d1a3d1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 8px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Error state */
+.errorState {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #dc3545;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  background-color: #fff5f5;
+  text-align: center;
+  padding: 20px;
+}
+
+.errorIcon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.retryButton {
+  background-color: #dc3545;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background-color 0.2s ease;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.retryButton:hover {
+  background-color: #c82333;
+}
+
+/* Unknown type */
+.unknownType {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #6c757d;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  background-color: #f8f9fa;
+}
+
+.unknownIcon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+/* Media overlay */
+.mediaOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 32px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, transparent 100%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 8px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 15;
+}
+
+.mediaField:hover .mediaOverlay {
+  opacity: 1;
+}
+
+.mediaInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mediaType {
+  background-color: rgba(209, 163, 209, 0.9);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.mediaName {
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 500;
+  font-family: 'Montserrat', sans-serif;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.deleteButton {
+  background-color: rgba(220, 53, 69, 0.9);
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.deleteButton:hover {
+  background-color: #dc3545;
+  transform: scale(1.1);
+}
+
+/* Modern RTF-style resize handles */
+.resizeHandles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 25;
+}
+
+.mediaField:hover .resizeHandles {
+  pointer-events: auto;
+}
+
+.resizeHandle {
+  position: absolute;
+  background-color: #ffffff;
+  border: 1px solid #b87db8;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 30;
+}
+
+.mediaField:hover .resizeHandle {
+  opacity: 1;
+}
+
+/* Corner handles */
+.resizeTopLeft {
+  top: -4px;
+  left: -4px;
+  width: 6px;
+  height: 6px;
+  cursor: nw-resize;
+}
+
+.resizeTopRight {
+  top: -4px;
+  right: -4px;
+  width: 6px;
+  height: 6px;
+  cursor: ne-resize;
+}
+
+.resizeBottomLeft {
+  bottom: -4px;
+  left: -4px;
+  width: 6px;
+  height: 6px;
+  cursor: sw-resize;
+}
+
+.resizeBottomRight {
+  bottom: -4px;
+  right: -4px;
+  width: 6px;
+  height: 6px;
+  cursor: se-resize;
+}
+
+/* Edge handles */
+.resizeTop {
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  cursor: n-resize;
+}
+
+.resizeBottom {
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  cursor: s-resize;
+}
+
+.resizeLeft {
+  left: -4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  cursor: w-resize;
+}
+
+.resizeRight {
+  right: -4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  cursor: e-resize;
+}
+
+/* Hover effects for handles */
+.resizeHandle:hover {
+  background-color: #b87db8;
+  border-color: #9966a3;
+  transform: scale(1.2);
+}
+
+.resizeTop:hover,
+.resizeBottom:hover {
+  transform: translateX(-50%) scale(1.2);
+}
+
+.resizeLeft:hover,
+.resizeRight:hover {
+  transform: translateY(-50%) scale(1.2);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .mediaField {
+    min-width: 80px;
+    min-height: 80px;
+  }
+  
+  .pdfContainer {
+    padding: 15px;
+  }
+  
+  .pdfIcon {
+    font-size: 36px;
+    margin-bottom: 8px;
+  }
+  
+  .pdfName {
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+  
+  .pdfButton {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+  
+  .resizeHandle {
+    width: 10px !important;
+    height: 10px !important;
+  }
+  
+  .resizeHandle:hover {
+    transform: scale(1.3);
+  }
+  
+  .resizeTop:hover,
+  .resizeBottom:hover {
+    transform: translateX(-50%) scale(1.3);
+  }
+  
+  .resizeLeft:hover,
+  .resizeRight:hover {
+    transform: translateY(-50%) scale(1.3);
+  }
+}

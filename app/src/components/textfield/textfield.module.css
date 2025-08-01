@@ -1,59 +1,170 @@
 .textField {
   position: relative;
-  border: 1px solid transparent;
-  border-radius: 4px;
+  border: 2px solid transparent;
+  border-radius: 0;
   background-color: transparent;
   font-family: 'Montserrat', sans-serif;
-  font-size: 14px;
+  font-size: 16px;
+  font-weight: 400;
   color: #000000;
   cursor: text;
-  transition: all 0.2s ease;
-  min-width: 100px;
-  min-height: 30px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  min-width: 200px;
+  min-height: 60px;
+  line-height: 1.4;
 }
 
 .textField:hover {
-  border-color: #e0e0e0;
-  background-color: #fafafa;
+  border-color: #d1a3d1;
+  box-shadow: 0 0 0 1px rgba(209, 163, 209, 0.3);
 }
 
 .textField.editing {
-  border-color: #007acc;
+  border-color: #b87db8;
   background-color: #ffffff;
-  box-shadow: 0 0 0 2px rgba(0, 122, 204, 0.2);
+  box-shadow: 0 0 0 2px rgba(209, 163, 209, 0.2);
 }
 
 .textField.resizing {
-  border-color: #007acc;
+  border-color: #b87db8;
+  box-shadow: 0 0 0 2px rgba(209, 163, 209, 0.2);
 }
 
-.dragHandle {
+.textField.dragging {
+  border-color: #b87db8;
+  box-shadow: 0 0 0 2px rgba(209, 163, 209, 0.3);
+}
+
+/* Drag area - entire border when not editing */
+.dragArea {
   position: absolute;
-  top: -10px;
-  left: -10px;
-  width: 20px;
-  height: 20px;
-  background-color: #007acc;
-  border: 2px solid #ffffff;
-  border-radius: 50%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   cursor: move;
+  z-index: 10;
+}
+
+.textField.editing .dragArea {
+  display: none;
+}
+
+/* Modern RTF-style resize handles */
+.resizeHandles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 25;
+}
+
+.textField:hover .resizeHandles,
+.textField.editing .resizeHandles {
+  pointer-events: auto;
+}
+
+.resizeHandle {
+  position: absolute;
+  background-color: #ffffff;
+  border: 1px solid #b87db8;
   opacity: 0;
   transition: opacity 0.2s ease;
   z-index: 30;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.dragHandle:hover {
-  background-color: #005a9e;
-  transform: scale(1.1);
-}
-
-.textField:hover .dragHandle {
+.textField:hover .resizeHandle,
+.textField.editing .resizeHandle {
   opacity: 1;
 }
 
-.textField.editing .dragHandle {
-  opacity: 0;
+/* Corner handles - small squares like in Word/Google Docs */
+.resizeTopLeft {
+  top: -4px;
+  left: -4px;
+  width: 6px;
+  height: 6px;
+  cursor: nw-resize;
+}
+
+.resizeTopRight {
+  top: -4px;
+  right: -4px;
+  width: 6px;
+  height: 6px;
+  cursor: ne-resize;
+}
+
+.resizeBottomLeft {
+  bottom: -4px;
+  left: -4px;
+  width: 6px;
+  height: 6px;
+  cursor: sw-resize;
+}
+
+.resizeBottomRight {
+  bottom: -4px;
+  right: -4px;
+  width: 6px;
+  height: 6px;
+  cursor: se-resize;
+}
+
+/* Edge handles - small rectangles */
+.resizeTop {
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  cursor: n-resize;
+}
+
+.resizeBottom {
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  cursor: s-resize;
+}
+
+.resizeLeft {
+  left: -4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  cursor: w-resize;
+}
+
+.resizeRight {
+  right: -4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  cursor: e-resize;
+}
+
+/* Hover effects for handles */
+.resizeHandle:hover {
+  background-color: #b87db8;
+  border-color: #9966a3;
+  transform: scale(1.2);
+}
+
+.resizeTop:hover,
+.resizeBottom:hover {
+  transform: translateX(-50%) scale(1.2);
+}
+
+.resizeLeft:hover,
+.resizeRight:hover {
+  transform: translateY(-50%) scale(1.2);
 }
 
 .textarea {
@@ -64,87 +175,117 @@
   background: transparent;
   font-family: inherit;
   font-size: inherit;
+  font-weight: inherit;
   color: inherit;
   resize: none;
-  padding: 5px;
+  padding: 12px 16px;
   box-sizing: border-box;
+  line-height: inherit;
+  z-index: 5;
+  position: relative;
+}
+
+.textarea::placeholder {
+  color: #999999;
+  font-style: normal;
 }
 
 .textDisplay {
-  padding: 5px;
+  padding: 12px 16px;
   width: 100%;
   height: 100%;
   overflow: hidden;
   word-wrap: break-word;
   white-space: pre-wrap;
   box-sizing: border-box;
-}
-
-.resizeHandle {
-  position: absolute;
-  bottom: -6px;
-  right: -6px;
-  width: 12px;
-  height: 12px;
-  background-color: #007acc;
-  border: 1px solid #ffffff;
-  cursor: nw-resize;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  z-index: 30;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-}
-
-.resizeHandle:hover {
-  background-color: #005a9e;
-  transform: scale(1.1);
-}
-
-.textField:hover .resizeHandle,
-.textField.editing .resizeHandle {
-  opacity: 1;
-}
-
-.deleteButton {
-  position: absolute;
-  top: -10px;
-  right: -10px;
-  width: 20px;
-  height: 20px;
-  border: 2px solid #ffffff;
-  border-radius: 50%;
-  background-color: #ff4444;
-  color: white;
-  font-size: 12px;
-  font-weight: bold;
-  cursor: pointer;
+  line-height: inherit;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 30;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  flex-direction: column;
+  justify-content: flex-start;
+  z-index: 5;
+  position: relative;
 }
 
-.deleteButton:hover {
-  background-color: #cc0000;
-  transform: scale(1.1);
+.mainText {
+  color: #000000;
+  text-decoration: underline;
+  font-size: 16px;
+  font-weight: 400;
+  margin-bottom: 8px;
+}
+
+.subText {
+  color: #666666;
+  font-size: 14px;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.textDisplay:empty::before {
+  content: "Click to edit";
+  color: #999999;
+  font-style: italic;
+}
+
+/* Focus states */
+.textField:focus-within {
+  border-color: #b87db8;
+  box-shadow: 0 0 0 2px rgba(209, 163, 209, 0.2);
+}
+
+/* Selection styling */
+.textarea::selection {
+  background-color: rgba(209, 163, 209, 0.3);
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .textField {
+    font-size: 14px;
+    min-height: 50px;
+    min-width: 180px;
+  }
+  
+  .mainText {
+    font-size: 14px;
+  }
+  
+  .subText {
     font-size: 12px;
   }
   
-  .dragHandle,
-  .deleteButton {
-    width: 24px;
-    height: 24px;
+  .textarea,
+  .textDisplay {
+    padding: 10px 12px;
   }
   
+  /* Larger touch targets on mobile */
   .resizeHandle {
-    width: 16px;
-    height: 16px;
+    width: 10px !important;
+    height: 10px !important;
+  }
+  
+  .resizeTop,
+  .resizeBottom {
+    transform: translateX(-50%);
+  }
+  
+  .resizeLeft,
+  .resizeRight {
+    transform: translateY(-50%);
+  }
+  
+  .resizeHandle:hover {
+    transform: scale(1.3);
+  }
+  
+  .resizeTop:hover,
+  .resizeBottom:hover {
+    transform: translateX(-50%) scale(1.3);
+  }
+  
+  .resizeLeft:hover,
+  .resizeRight:hover {
+    transform: translateY(-50%) scale(1.3);
   }
 }
