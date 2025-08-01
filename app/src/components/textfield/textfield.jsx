@@ -96,18 +96,11 @@ function TextField({
       const startWidth = width;
       const startHeight = height;
       
-      // Get the element's position for position-based resizing
-      const rect = e.currentTarget.closest(`.${css.textField}`).getBoundingClientRect();
-      const startLeft = rect.left;
-      const startTop = rect.top;
-      
       resizeStateRef.current = {
         startX,
         startY,
         startWidth,
         startHeight,
-        startLeft,
-        startTop,
         direction,
         lastUpdate: 0
       };
@@ -116,7 +109,6 @@ function TextField({
         const now = Date.now();
         const state = resizeStateRef.current;
         
-        // Throttle updates for performance
         if (now - state.lastUpdate < 16) return;
         state.lastUpdate = now;
         
@@ -126,7 +118,6 @@ function TextField({
         const deltaX = e.clientX - state.startX;
         const deltaY = e.clientY - state.startY;
 
-        // RTF-style resizing logic
         switch (state.direction) {
           case 'top':
             newHeight = Math.max(60, state.startHeight - deltaY);
@@ -158,7 +149,6 @@ function TextField({
             break;
         }
 
-        // Smooth resizing with bounds checking
         if (newWidth !== width || newHeight !== height) {
           onResize(id, Math.round(newWidth), Math.round(newHeight));
         }
@@ -173,7 +163,6 @@ function TextField({
         document.body.style.userSelect = '';
       };
 
-      // Set cursor for entire document during resize
       document.body.style.cursor = e.target.style.cursor;
       document.body.style.userSelect = 'none';
       
@@ -200,13 +189,30 @@ function TextField({
       onClick={handleClick}
       onDoubleClick={handleDoubleClick}
     >
-      {/* Drag area - entire border when not editing */}
+      {/* Drag areas - only on border edges when not editing */}
       {!isEditing && (
-        <div 
-          className={`${css.dragArea} drag-handle`}
-          onMouseDown={handleDragStart}
-          onMouseUp={handleDragStop}
-        />
+        <>
+          <div 
+            className={`${css.dragBorderTop} drag-handle`}
+            onMouseDown={handleDragStart}
+            onMouseUp={handleDragStop}
+          />
+          <div 
+            className={`${css.dragBorderBottom} drag-handle`}
+            onMouseDown={handleDragStart}
+            onMouseUp={handleDragStop}
+          />
+          <div 
+            className={`${css.dragBorderLeft} drag-handle`}
+            onMouseDown={handleDragStart}
+            onMouseUp={handleDragStop}
+          />
+          <div 
+            className={`${css.dragBorderRight} drag-handle`}
+            onMouseDown={handleDragStart}
+            onMouseUp={handleDragStop}
+          />
+        </>
       )}
 
       {/* Modern RTF-style resize handles */}

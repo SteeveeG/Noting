@@ -188,8 +188,8 @@ function Canvas() {
       {/* Render all elements */}
       {elements.map((element) => (
         <Draggable
-          key={element.id}
-          position={{ x: element.x, y: element.y }}
+          key={`draggable-${element.id}`}
+          defaultPosition={{ x: element.x, y: element.y }}
           onStop={(e, data) => handleDragStop(element.id, data)}
           handle=".drag-handle"
           disabled={element.type === 'text' && element.isEditing}

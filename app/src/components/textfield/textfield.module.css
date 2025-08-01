@@ -35,18 +35,49 @@
   box-shadow: 0 0 0 2px rgba(209, 163, 209, 0.3);
 }
 
-/* Drag area - entire border when not editing */
-.dragArea {
+/* Drag area - only on border edges */
+.dragBorderTop,
+.dragBorderBottom,
+.dragBorderLeft,
+.dragBorderRight {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
   cursor: move;
-  z-index: 10;
+  z-index: 15;
+  background-color: transparent;
 }
 
-.textField.editing .dragArea {
+.dragBorderTop {
+  top: -2px;
+  left: 0;
+  right: 0;
+  height: 6px;
+}
+
+.dragBorderBottom {
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 6px;
+}
+
+.dragBorderLeft {
+  left: -2px;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+}
+
+.dragBorderRight {
+  right: -2px;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+}
+
+.textField.editing .dragBorderTop,
+.textField.editing .dragBorderBottom,
+.textField.editing .dragBorderLeft,
+.textField.editing .dragBorderRight {
   display: none;
 }
 
@@ -61,8 +92,7 @@
   z-index: 25;
 }
 
-.textField:hover .resizeHandles,
-.textField.editing .resizeHandles {
+.textField:hover .resizeHandles {
   pointer-events: auto;
 }
 
@@ -75,12 +105,11 @@
   z-index: 30;
 }
 
-.textField:hover .resizeHandle,
-.textField.editing .resizeHandle {
+.textField:hover .resizeHandle {
   opacity: 1;
 }
 
-/* Corner handles - small squares like in Word/Google Docs */
+/* Corner handles */
 .resizeTopLeft {
   top: -4px;
   left: -4px;
@@ -113,7 +142,7 @@
   cursor: se-resize;
 }
 
-/* Edge handles - small rectangles */
+/* Edge handles */
 .resizeTop {
   top: -4px;
   left: 50%;
@@ -260,19 +289,19 @@
   }
   
   /* Larger touch targets on mobile */
+  .dragBorderTop,
+  .dragBorderBottom {
+    height: 10px;
+  }
+  
+  .dragBorderLeft,
+  .dragBorderRight {
+    width: 10px;
+  }
+  
   .resizeHandle {
     width: 10px !important;
     height: 10px !important;
-  }
-  
-  .resizeTop,
-  .resizeBottom {
-    transform: translateX(-50%);
-  }
-  
-  .resizeLeft,
-  .resizeRight {
-    transform: translateY(-50%);
   }
   
   .resizeHandle:hover {

@@ -60,7 +60,7 @@ export const AppProvider = ({ children }) => {
           {
             id: 3,
             type: 'text',
-            content: "Work Notes - Page 1 (Pages sind jetzt in der Sidebar)",
+            content: "Work Notes - Page 1 (Titel zeigt jetzt Kategorie/Seitenname)",
             x: 100,
             y: 100,
             width: 450,
@@ -120,9 +120,9 @@ export const AppProvider = ({ children }) => {
 
   const [nextElementId, setNextElementId] = useState(7);
 
-  // Get current file path for display
+  // Get current file path for display - Format: <.../category/pagename...>
   const getCurrentFilePath = () => {
-    return `/homework/${activeCategory}/${activePage}/21-06-2005...`;
+    return `/${activeCategory}/${activePage}...`;
   };
 
   // Get available pages for current category

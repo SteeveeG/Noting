@@ -3,10 +3,7 @@
   width: 100%;
   height: 100%;
   background-color: #ffffff;
-  background-image: 
-    radial-gradient(circle at 1px 1px, rgba(0,0,0,0.03) 1px, transparent 0);
-  background-size: 20px 20px;
-  cursor: crosshair;
+  cursor: text;
   overflow: hidden;
   user-select: none;
 }
@@ -22,7 +19,7 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   backdrop-filter: blur(8px);
   z-index: 5;
-  font-family: 'Inter', 'Montserrat', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   max-width: 280px;
 }
 
@@ -95,13 +92,13 @@
   z-index: 100 !important;
 }
 
- 
+/* Canvas states */
+.canvas:active {
+  cursor: text;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
-  .canvas {
-    background-size: 16px 16px;
-  }
-  
   .canvasInstructions {
     top: 16px;
     left: 16px;
@@ -125,33 +122,3 @@
     font-size: 18px;
   }
 }
-
-/* Dark mode support */
-/* @media (prefers-color-scheme: dark) {
-  .canvas {
-    background-color: #0d1117;
-    background-image: 
-      radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
-  }
-  
-  .canvasInstructions {
-    background-color: rgba(13, 17, 23, 0.95);
-    border-color: #30363d;
-  }
-  
-  .instructionTitle {
-    color: #f0f6fc;
-  }
-  
-  .instructionList {
-    color: #8b949e;
-  }
-  
-  .mediaButton {
-    background-color: #b87db8;
-  }
-  
-  .mediaButton:hover {
-    background-color: #9966a3;
-  }
-} */

@@ -27,15 +27,43 @@
   transform: rotate(1deg);
 }
 
-/* Drag area */
-.dragArea {
+/* Drag areas - only on border edges */
+.dragBorderTop,
+.dragBorderBottom,
+.dragBorderLeft,
+.dragBorderRight {
   position: absolute;
-  top: 0;
+  cursor: move;
+  z-index: 15;
+  background-color: transparent;
+}
+
+.dragBorderTop {
+  top: -2px;
   left: 0;
   right: 0;
+  height: 6px;
+}
+
+.dragBorderBottom {
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 6px;
+}
+
+.dragBorderLeft {
+  left: -2px;
+  top: 0;
   bottom: 0;
-  cursor: move;
-  z-index: 10;
+  width: 6px;
+}
+
+.dragBorderRight {
+  right: -2px;
+  top: 0;
+  bottom: 0;
+  width: 6px;
 }
 
 /* Media content */
@@ -394,6 +422,16 @@
   .mediaField {
     min-width: 80px;
     min-height: 80px;
+  }
+  
+  .dragBorderTop,
+  .dragBorderBottom {
+    height: 10px;
+  }
+  
+  .dragBorderLeft,
+  .dragBorderRight {
+    width: 10px;
   }
   
   .pdfContainer {

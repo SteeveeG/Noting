@@ -16,7 +16,6 @@ function MediaField({
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const resizeStateRef = useRef(null);
-  const fileInputRef = useRef(null);
 
   // Handle media load
   const handleMediaLoad = useCallback(() => {
@@ -222,9 +221,24 @@ function MediaField({
       className={`${css.mediaField} ${isResizing ? css.resizing : ''} ${isDragging ? css.dragging : ''}`}
       style={{ width: `${width}px`, height: `${height}px` }}
     >
-      {/* Drag area */}
+      {/* Drag areas - only on border edges */}
       <div 
-        className={`${css.dragArea} drag-handle`}
+        className={`${css.dragBorderTop} drag-handle`}
+        onMouseDown={handleDragStart}
+        onMouseUp={handleDragStop}
+      />
+      <div 
+        className={`${css.dragBorderBottom} drag-handle`}
+        onMouseDown={handleDragStart}
+        onMouseUp={handleDragStop}
+      />
+      <div 
+        className={`${css.dragBorderLeft} drag-handle`}
+        onMouseDown={handleDragStart}
+        onMouseUp={handleDragStop}
+      />
+      <div 
+        className={`${css.dragBorderRight} drag-handle`}
         onMouseDown={handleDragStart}
         onMouseUp={handleDragStop}
       />
