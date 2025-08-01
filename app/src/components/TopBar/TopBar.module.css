@@ -1,0 +1,74 @@
+.topBar {
+  height: 50px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.leftSection {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.notusText {
+  font-size: 20px;
+  font-weight: 600;
+  color: #000000;
+}
+
+.categoryTab {
+  background-color: #ff69b4;
+  color: #ffffff;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.centerSection {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.filePath {
+  color: #000000;
+  font-size: 14px;
+  text-decoration: underline;
+}
+
+.rightSection {
+  display: flex;
+}
+
+.windowControls {
+  color: #666666;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .topBar {
+    padding: 0 15px;
+    height: 45px;
+  }
+  
+  .notusText {
+    font-size: 18px;
+  }
+  
+  .categoryTab {
+    font-size: 12px;
+    padding: 3px 8px;
+  }
+  
+  .filePath {
+    font-size: 12px;
+  }
+}

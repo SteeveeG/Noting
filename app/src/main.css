@@ -1,4 +1,16 @@
-html {
-  background-color: white;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
+body {
+  font-family: 'Montserrat', sans-serif;
+  background-color: #ffffff;
+  overflow: hidden;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+}
