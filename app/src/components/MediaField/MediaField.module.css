@@ -42,28 +42,28 @@
   top: -2px;
   left: 0;
   right: 0;
-  height: 6px;
+  height: 200px;
 }
 
 .dragBorderBottom {
   bottom: -2px;
   left: 0;
   right: 0;
-  height: 6px;
+  height: 12px;
 }
 
 .dragBorderLeft {
   left: -2px;
   top: 0;
   bottom: 0;
-  width: 6px;
+  width: 12px;
 }
 
 .dragBorderRight {
   right: -2px;
   top: 0;
   bottom: 0;
-  width: 6px;
+  width: 12px;
 }
 
 /* Media content */
@@ -423,50 +423,50 @@
     min-width: 80px;
     min-height: 80px;
   }
-  
+
   .dragBorderTop,
   .dragBorderBottom {
-    height: 10px;
+    height: 35px;
   }
-  
+
   .dragBorderLeft,
   .dragBorderRight {
-    width: 10px;
+    width: 35px;
   }
-  
+
   .pdfContainer {
     padding: 15px;
   }
-  
+
   .pdfIcon {
     font-size: 36px;
     margin-bottom: 8px;
   }
-  
+
   .pdfName {
     font-size: 12px;
     margin-bottom: 8px;
   }
-  
+
   .pdfButton {
     padding: 4px 8px;
     font-size: 11px;
   }
-  
+
   .resizeHandle {
     width: 10px !important;
     height: 10px !important;
   }
-  
+
   .resizeHandle:hover {
     transform: scale(1.3);
   }
-  
+
   .resizeTop:hover,
   .resizeBottom:hover {
     transform: translateX(-50%) scale(1.3);
   }
-  
+
   .resizeLeft:hover,
   .resizeRight:hover {
     transform: translateY(-50%) scale(1.3);

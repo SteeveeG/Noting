@@ -47,31 +47,31 @@
 }
 
 .dragBorderTop {
-  top: -2px;
+  top: -10px;
   left: 0;
   right: 0;
-  height: 6px;
+  height: 25px;
 }
 
 .dragBorderBottom {
-  bottom: -2px;
+  bottom: -10px;
   left: 0;
   right: 0;
-  height: 6px;
+  height: 25px;
 }
 
 .dragBorderLeft {
-  left: -2px;
+  left: -10px;
   top: 0;
   bottom: 0;
-  width: 6px;
+  width: 25px;
 }
 
 .dragBorderRight {
-  right: -2px;
+  right: -10px;
   top: 0;
   bottom: 0;
-  width: 6px;
+  width: 25px;
 }
 
 .textField.editing .dragBorderTop,
@@ -291,12 +291,12 @@
   /* Larger touch targets on mobile */
   .dragBorderTop,
   .dragBorderBottom {
-    height: 10px;
+    height: 35px;
   }
   
   .dragBorderLeft,
   .dragBorderRight {
-    width: 10px;
+    width: 35px;
   }
   
   .resizeHandle {
