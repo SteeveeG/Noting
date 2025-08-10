@@ -1,5 +1,5 @@
 import React, { useRef, useCallback } from 'react';
-import Draggable from 'react-draggable';
+import DraggableElement from '../DraggableElement/DraggableElement';
 import TextField from '../textfield/TextField';
 import MediaField from '../MediaField/MediaField';
 import MediaUploader from '../MediaUploader/MediaUploader';
@@ -7,7 +7,7 @@ import { useApp } from '../../context/AppContext';
 import css from './Canvas.module.css';
 
 function Canvas() {
-  const { 
+  const {
     activeCategory,
     activePage,
     getCurrentPageElements,
@@ -68,18 +68,23 @@ function Canvas() {
 
   // Update element position after drag
   const handleDragStop = useCallback((id, data) => {
-    const updatedElements = elements.map(element => 
-      element.id === id 
+    const updatedElements = elements.map(element =>
+      element.id === id
         ? { ...element, x: Math.max(0, data.x), y: Math.max(0, data.y) }
         : element
     );
     updateCurrentPageElements(updatedElements);
   }, [elements, updateCurrentPageElements]);
 
+  // Get current element by ID
+  const getCurrentElement = useCallback((id) => {
+    return elements.find(element => element.id === id);
+  }, [elements]);
+
   // Update text field content
   const handleTextChange = useCallback((id, newContent) => {
-    const updatedElements = elements.map(element => 
-      element.id === id 
+    const updatedElements = elements.map(element =>
+      element.id === id
         ? { ...element, content: newContent }
         : element
     );
@@ -88,8 +93,8 @@ function Canvas() {
 
   // Toggle editing mode for text fields
   const handleTextFieldClick = useCallback((id) => {
-    const updatedElements = elements.map(element => 
-      element.id === id 
+    const updatedElements = elements.map(element =>
+      element.id === id
         ? { ...element, isEditing: true }
         : { ...element, isEditing: false }
     );
@@ -100,9 +105,9 @@ function Canvas() {
   // Stop editing when clicking outside
   const handleCanvasClick = useCallback((e) => {
     if (e.target === canvasRef.current) {
-      const updatedElements = elements.map(element => ({ 
-        ...element, 
-        isEditing: false 
+      const updatedElements = elements.map(element => ({
+        ...element,
+        isEditing: false
       }));
       updateCurrentPageElements(updatedElements);
     }
@@ -115,26 +120,34 @@ function Canvas() {
   }, [elements, updateCurrentPageElements]);
 
   // Resize element
-  const handleResize = useCallback((id, newWidth, newHeight) => {
-    const updatedElements = elements.map(element => 
-      element.id === id 
-        ? { ...element, width: newWidth, height: newHeight }
+  const handleResize = useCallback((id, newWidth, newHeight, newX, newY) => {
+    const updatedElements = elements.map(element =>
+      element.id === id
+        ? {
+            ...element,
+            width: newWidth,
+            height: newHeight,
+
+           ...(newX !== undefined && { x: newX }),
+          ...(newY !== undefined && { y: newY })
+          }
         : element
     );
     updateCurrentPageElements(updatedElements);
   }, [elements, updateCurrentPageElements]);
 
+
   // Handle keyboard shortcuts
   const handleKeyDown = useCallback((e) => {
     if (e.key === 'Escape') {
-      const updatedElements = elements.map(element => ({ 
-        ...element, 
-        isEditing: false 
+      const updatedElements = elements.map(element => ({
+        ...element,
+        isEditing: false
       }));
       updateCurrentPageElements(updatedElements);
       setShowMediaUploader(false);
     }
-    
+
     // Ctrl/Cmd + I for media upload
     if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
       e.preventDefault();
@@ -154,7 +167,7 @@ function Canvas() {
   }, [activeCategory, activePage, elements.length]);
 
   return (
-    <div 
+    <div
       className={css.canvas}
       ref={canvasRef}
       onDoubleClick={handleCanvasDoubleClick}
@@ -177,51 +190,50 @@ function Canvas() {
       )}
 
       {/* Media Upload Button */}
-      <button 
+      <button
         className={css.mediaButton}
         onClick={() => setShowMediaUploader(true)}
         title="Add Images/PDFs (Ctrl+I)"
       >
         📎
       </button>
-      
+
       {/* Render all elements */}
       {elements.map((element) => (
-        <Draggable
+        <DraggableElement
           key={`draggable-${element.id}`}
           defaultPosition={{ x: element.x, y: element.y }}
           onStop={(e, data) => handleDragStop(element.id, data)}
           handle=".drag-handle"
           disabled={element.type === 'text' && element.isEditing}
           bounds="parent"
+          className={css.elementWrapper}
         >
-          <div className={css.elementWrapper}>
-            {element.type === 'text' ? (
-              <TextField
-                id={element.id}
-                content={element.content}
-                width={element.width}
-                height={element.height}
-                isEditing={element.isEditing}
-                onTextChange={handleTextChange}
-                onTextFieldClick={handleTextFieldClick}
-                onDelete={handleDeleteElement}
-                onResize={handleResize}
-              />
-            ) : (
-              <MediaField
-                id={element.id}
-                mediaType={element.mediaType}
-                mediaSrc={element.mediaSrc}
-                mediaName={element.mediaName}
-                width={element.width}
-                height={element.height}
-                onDelete={handleDeleteElement}
-                onResize={handleResize}
-              />
-            )}
-          </div>
-        </Draggable>
+          {element.type === 'text' ? (
+            <TextField
+              id={element.id}
+              content={element.content}
+              width={element.width}
+              height={element.height}
+              isEditing={element.isEditing}
+              onTextChange={handleTextChange}
+              onTextFieldClick={handleTextFieldClick}
+              onDelete={handleDeleteElement}
+              onResize={handleResize}
+            />
+          ) : (
+            <MediaField
+              id={element.id}
+              mediaType={element.mediaType}
+              mediaSrc={element.mediaSrc}
+              mediaName={element.mediaName}
+              width={element.width}
+              height={element.height}
+              onDelete={handleDeleteElement}
+              onResize={handleResize}
+            />
+          )}
+        </DraggableElement>
       ))}
 
       {/* Media Uploader Modal */}

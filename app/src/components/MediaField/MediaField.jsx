@@ -9,7 +9,7 @@ function MediaField({
   width, 
   height, 
   onDelete, 
-  onResize 
+  onResize
 }) {
   const [isResizing, setIsResizing] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -17,19 +17,18 @@ function MediaField({
   const [hasError, setHasError] = useState(false);
   const resizeStateRef = useRef(null);
 
-  // Handle media load
+  // Media loading handlers
   const handleMediaLoad = useCallback(() => {
     setIsLoading(false);
     setHasError(false);
   }, []);
 
-  // Handle media error
   const handleMediaError = useCallback(() => {
     setIsLoading(false);
     setHasError(true);
   }, []);
 
-  // Modern RTF-style resize handler
+  // Resize functionality
   const createResizeHandler = useCallback((direction) => {
     return (e) => {
       e.stopPropagation();
@@ -40,11 +39,20 @@ function MediaField({
       const startWidth = width;
       const startHeight = height;
       
+      // Get current position from DraggableElement parent
+      const draggableElement = e.target.closest('.elementWrapper');
+      const rect = draggableElement?.getBoundingClientRect();
+      const parentRect = draggableElement?.offsetParent?.getBoundingClientRect();
+      const startElementX = rect && parentRect ? rect.left - parentRect.left : 0;
+      const startElementY = rect && parentRect ? rect.top - parentRect.top : 0;
+      
       resizeStateRef.current = {
         startX,
         startY,
         startWidth,
         startHeight,
+        startElementX,
+        startElementY,
         direction,
         lastUpdate: 0
       };
@@ -53,11 +61,22 @@ function MediaField({
         const now = Date.now();
         const state = resizeStateRef.current;
         
-        if (now - state.lastUpdate < 16) return;
+        if (!state || now - state.lastUpdate < 16) return;
         state.lastUpdate = now;
         
-        let newWidth = state.startWidth;
-        let newHeight = state.startHeight;
+        // Get current element position and size (not start values!)
+        const draggableElement = e.target.closest('.elementWrapper');
+        const currentRect = draggableElement?.getBoundingClientRect();
+        const parentRect = draggableElement?.offsetParent?.getBoundingClientRect();
+        const currentElementX = currentRect && parentRect ? currentRect.left - parentRect.left : state.startElementX;
+        const currentElementY = currentRect && parentRect ? currentRect.top - parentRect.top : state.startElementY;
+        const currentWidth = width;  // Use current prop values
+        const currentHeight = height;
+        
+        let newWidth = currentWidth;
+        let newHeight = currentHeight;
+        let newX = currentElementX;
+        let newY = currentElementY;
         
         const deltaX = e.clientX - state.startX;
         const deltaY = e.clientY - state.startY;
@@ -68,49 +87,82 @@ function MediaField({
         switch (state.direction) {
           case 'top':
             newHeight = Math.max(100, state.startHeight - deltaY);
+            newY = state.startElementY + (state.startHeight - newHeight);
             if (mediaType === 'image') {
               newWidth = newHeight * aspectRatio;
+              newX = state.startElementX + (state.startWidth - newWidth) / 2;
             }
             break;
           case 'bottom':
             newHeight = Math.max(100, state.startHeight + deltaY);
             if (mediaType === 'image') {
               newWidth = newHeight * aspectRatio;
+              newX = state.startElementX + (state.startWidth - newWidth) / 2;
             }
             break;
           case 'left':
             newWidth = Math.max(100, state.startWidth - deltaX);
+            newX = state.startElementX + (state.startWidth - newWidth);
             if (mediaType === 'image') {
               newHeight = newWidth / aspectRatio;
+              newY = state.startElementY + (state.startHeight - newHeight) / 2;
             }
             break;
           case 'right':
             newWidth = Math.max(100, state.startWidth + deltaX);
             if (mediaType === 'image') {
               newHeight = newWidth / aspectRatio;
+              newY = state.startElementY + (state.startHeight - newHeight) / 2;
             }
             break;
           case 'top-left':
-          case 'top-right':
-          case 'bottom-left':
-          case 'bottom-right':
-            // Corner resize - maintain aspect ratio
             if (mediaType === 'image') {
-              const newSize = Math.max(100, Math.min(
-                state.startWidth + (direction.includes('right') ? deltaX : -deltaX),
-                (state.startHeight + (direction.includes('bottom') ? deltaY : -deltaY)) * aspectRatio
-              ));
+              const newSize = Math.max(100, Math.min(state.startWidth - deltaX, (state.startHeight - deltaY) * aspectRatio));
               newWidth = newSize;
               newHeight = newSize / aspectRatio;
             } else {
-              newWidth = Math.max(100, state.startWidth + (direction.includes('right') ? deltaX : -deltaX));
-              newHeight = Math.max(100, state.startHeight + (direction.includes('bottom') ? deltaY : -deltaY));
+              newWidth = Math.max(100, state.startWidth - deltaX);
+              newHeight = Math.max(100, state.startHeight - deltaY);
+            }
+            newX = state.startElementX + (state.startWidth - newWidth);
+            newY = state.startElementY + (state.startHeight - newHeight);
+            break;
+          case 'top-right':
+            if (mediaType === 'image') {
+              const newSize = Math.max(100, Math.min(state.startWidth + deltaX, (state.startHeight - deltaY) * aspectRatio));
+              newWidth = newSize;
+              newHeight = newSize / aspectRatio;
+            } else {
+              newWidth = Math.max(100, state.startWidth + deltaX);
+              newHeight = Math.max(100, state.startHeight - deltaY);
+            }
+            newY = state.startElementY + (state.startHeight - newHeight);
+            break;
+          case 'bottom-left':
+            if (mediaType === 'image') {
+              const newSize = Math.max(100, Math.min(state.startWidth - deltaX, (state.startHeight + deltaY) * aspectRatio));
+              newWidth = newSize;
+              newHeight = newSize / aspectRatio;
+            } else {
+              newWidth = Math.max(100, state.startWidth - deltaX);
+              newHeight = Math.max(100, state.startHeight + deltaY);
+            }
+            newX = state.startElementX + (state.startWidth - newWidth);
+            break;
+          case 'bottom-right':
+            if (mediaType === 'image') {
+              const newSize = Math.max(100, Math.min(state.startWidth + deltaX, (state.startHeight + deltaY) * aspectRatio));
+              newWidth = newSize;
+              newHeight = newSize / aspectRatio;
+            } else {
+              newWidth = Math.max(100, state.startWidth + deltaX);
+              newHeight = Math.max(100, state.startHeight + deltaY);
             }
             break;
         }
 
-        if (newWidth !== width || newHeight !== height) {
-          onResize(id, Math.round(newWidth), Math.round(newHeight));
+        if (newWidth !== currentWidth || newHeight !== currentHeight || newX !== currentElementX || newY !== currentElementY) {
+          onResize(id, Math.round(newWidth), Math.round(newHeight), Math.round(newX), Math.round(newY));
         }
       };
 
@@ -131,7 +183,7 @@ function MediaField({
     };
   }, [id, width, height, onResize, mediaType]);
 
-  // Handle drag start/stop
+  // Drag state - managed by parent DraggableElement
   const handleDragStart = useCallback(() => {
     setIsDragging(true);
   }, []);
@@ -140,14 +192,32 @@ function MediaField({
     setIsDragging(false);
   }, []);
 
-  // Handle delete
+  // Delete handler
   const handleDelete = useCallback((e) => {
     e.stopPropagation();
     onDelete(id);
   }, [id, onDelete]);
 
-  // Render media content
-  const renderMediaContent = () => {
+  // Retry handler for failed media
+  const handleRetry = useCallback(() => {
+    setHasError(false);
+    setIsLoading(true);
+  }, []);
+
+  // PDF action handlers
+  const handlePdfOpen = useCallback(() => {
+    window.open(mediaSrc, '_blank');
+  }, [mediaSrc]);
+
+  const handlePdfDownload = useCallback(() => {
+    const link = document.createElement('a');
+    link.href = mediaSrc;
+    link.download = mediaName || 'document.pdf';
+    link.click();
+  }, [mediaSrc, mediaName]);
+
+  // Media content renderer
+  const renderMediaContent = useCallback(() => {
     if (isLoading) {
       return (
         <div className={css.loadingState}>
@@ -162,10 +232,7 @@ function MediaField({
         <div className={css.errorState}>
           <div className={css.errorIcon}>⚠</div>
           <span>Failed to load {mediaType}</span>
-          <button className={css.retryButton} onClick={() => {
-            setHasError(false);
-            setIsLoading(true);
-          }}>
+          <button className={css.retryButton} onClick={handleRetry}>
             Retry
           </button>
         </div>
@@ -191,15 +258,10 @@ function MediaField({
             <div className={css.pdfInfo}>
               <div className={css.pdfName}>{mediaName || 'Document.pdf'}</div>
               <div className={css.pdfActions}>
-                <button className={css.pdfButton} onClick={() => window.open(mediaSrc, '_blank')}>
+                <button className={css.pdfButton} onClick={handlePdfOpen}>
                   Open
                 </button>
-                <button className={css.pdfButton} onClick={() => {
-                  const link = document.createElement('a');
-                  link.href = mediaSrc;
-                  link.download = mediaName || 'document.pdf';
-                  link.click();
-                }}>
+                <button className={css.pdfButton} onClick={handlePdfDownload}>
                   Download
                 </button>
               </div>
@@ -214,33 +276,29 @@ function MediaField({
           </div>
         );
     }
-  };
+  }, [isLoading, hasError, mediaType, mediaSrc, mediaName, handleMediaLoad, handleMediaError, handleRetry, handlePdfOpen, handlePdfDownload]);
 
   return (
     <div 
       className={`${css.mediaField} ${isResizing ? css.resizing : ''} ${isDragging ? css.dragging : ''}`}
       style={{ width: `${width}px`, height: `${height}px` }}
     >
-      {/* Drag areas - only on border edges */}
+      {/* Drag areas */}
       <div 
         className={`${css.dragBorderTop} drag-handle`}
-        onMouseDown={handleDragStart}
-        onMouseUp={handleDragStop}
+        onClick={(e) => e.stopPropagation()}
       />
       <div 
         className={`${css.dragBorderBottom} drag-handle`}
-        onMouseDown={handleDragStart}
-        onMouseUp={handleDragStop}
+        onClick={(e) => e.stopPropagation()}
       />
       <div 
         className={`${css.dragBorderLeft} drag-handle`}
-        onMouseDown={handleDragStart}
-        onMouseUp={handleDragStop}
+        onClick={(e) => e.stopPropagation()}
       />
       <div 
         className={`${css.dragBorderRight} drag-handle`}
-        onMouseDown={handleDragStart}
-        onMouseUp={handleDragStop}
+        onClick={(e) => e.stopPropagation()}
       />
 
       {/* Media content */}
@@ -248,7 +306,7 @@ function MediaField({
         {renderMediaContent()}
       </div>
 
-      {/* Media info overlay */}
+      {/* Media overlay with info and delete button */}
       <div className={css.mediaOverlay}>
         <div className={css.mediaInfo}>
           <span className={css.mediaType}>{mediaType.toUpperCase()}</span>
@@ -259,15 +317,12 @@ function MediaField({
         </button>
       </div>
 
-      {/* Modern RTF-style resize handles */}
+      {/* Resize handles */}
       <div className={css.resizeHandles}>
-        {/* Corner handles */}
         <div className={`${css.resizeHandle} ${css.resizeTopLeft}`} onMouseDown={createResizeHandler('top-left')} />
         <div className={`${css.resizeHandle} ${css.resizeTopRight}`} onMouseDown={createResizeHandler('top-right')} />
         <div className={`${css.resizeHandle} ${css.resizeBottomLeft}`} onMouseDown={createResizeHandler('bottom-left')} />
         <div className={`${css.resizeHandle} ${css.resizeBottomRight}`} onMouseDown={createResizeHandler('bottom-right')} />
-        
-        {/* Edge handles */}
         <div className={`${css.resizeHandle} ${css.resizeTop}`} onMouseDown={createResizeHandler('top')} />
         <div className={`${css.resizeHandle} ${css.resizeBottom}`} onMouseDown={createResizeHandler('bottom')} />
         <div className={`${css.resizeHandle} ${css.resizeLeft}`} onMouseDown={createResizeHandler('left')} />

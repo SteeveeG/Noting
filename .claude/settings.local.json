@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "WebFetch(domain:techcommunity.microsoft.com)",
+      "Bash(npm uninstall:*)",
+      "Bash(npm run dev:*)",
+      "WebFetch(domain:localhost)"
     ],
     "deny": []
   }
