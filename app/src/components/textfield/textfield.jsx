@@ -1,16 +1,16 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import css from './TextField.module.css';
 
-function TextField({ 
-  id, 
-  content, 
-  width, 
-  height, 
-  isEditing, 
-  onTextChange, 
-  onTextFieldClick, 
-  onDelete, 
-  onResize 
+function TextField({
+  id,
+  content,
+  width,
+  height,
+  isEditing,
+  onTextChange,
+  onTextFieldClick,
+  onDelete,
+  onResize
 }) {
   const [localContent, setLocalContent] = useState(content);
   const [isResizing, setIsResizing] = useState(false);
@@ -35,20 +35,6 @@ function TextField({
     }
   }, [isEditing]);
 
-  // Parse content to separate main text and sub text
-  const parseContent = useCallback((text) => {
-    if (!text) return { mainText: '', subText: '' };
-    
-    const match = text.match(/^(.*?)\s*\((.*?)\)\s*$/);
-    if (match) {
-      return {
-        mainText: match[1].trim(),
-        subText: match[2].trim()
-      };
-    }
-    
-    return { mainText: text, subText: '' };
-  }, []);
 
   // Handle text change
   const handleTextChange = useCallback((e) => {
@@ -74,7 +60,7 @@ function TextField({
   }, [id, isDragging, isResizing, onTextFieldClick]);
 
   // Handle key press
-  const handleKeyPress = useCallback((e) => {
+  const handleKeyDown = useCallback((e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       onTextFieldClick(null);
@@ -83,6 +69,11 @@ function TextField({
       e.preventDefault();
       onTextFieldClick(null);
     }
+    // Allow Tab key to work normally
+    if (e.key === 'Tab') {
+      // Don't prevent default - let Tab work normally
+      return;
+    }
   }, [onTextFieldClick]);
 
   // Modern RTF-style resize handler
@@ -90,12 +81,12 @@ function TextField({
     return (e) => {
       e.stopPropagation();
       setIsResizing(true);
-      
+
       const startX = e.clientX;
       const startY = e.clientY;
       const startWidth = width;
       const startHeight = height;
-      
+
       resizeStateRef.current = {
         startX,
         startY,
@@ -108,13 +99,13 @@ function TextField({
       const handleMouseMove = (e) => {
         const now = Date.now();
         const state = resizeStateRef.current;
-        
+
         if (now - state.lastUpdate < 16) return;
         state.lastUpdate = now;
-        
+
         let newWidth = state.startWidth;
         let newHeight = state.startHeight;
-        
+
         const deltaX = e.clientX - state.startX;
         const deltaY = e.clientY - state.startY;
 
@@ -165,7 +156,7 @@ function TextField({
 
       document.body.style.cursor = e.target.style.cursor;
       document.body.style.userSelect = 'none';
-      
+
       document.addEventListener('mousemove', handleMouseMove);
       document.addEventListener('mouseup', handleMouseUp);
     };
@@ -180,10 +171,9 @@ function TextField({
     setIsDragging(false);
   }, []);
 
-  const { mainText, subText } = parseContent(localContent);
 
   return (
-    <div 
+    <div
       className={`${css.textField} ${isEditing ? css.editing : ''} ${isResizing ? css.resizing : ''} ${isDragging ? css.dragging : ''}`}
       style={{ width: `${width}px`, height: `${height}px` }}
       onClick={handleClick}
@@ -192,22 +182,22 @@ function TextField({
       {/* Drag areas - only on border edges when not editing */}
       {!isEditing && (
         <>
-          <div 
+          <div
             className={`${css.dragBorderTop} drag-handle`}
             onMouseDown={handleDragStart}
             onMouseUp={handleDragStop}
           />
-          <div 
+          <div
             className={`${css.dragBorderBottom} drag-handle`}
             onMouseDown={handleDragStart}
             onMouseUp={handleDragStop}
           />
-          <div 
+          <div
             className={`${css.dragBorderLeft} drag-handle`}
             onMouseDown={handleDragStart}
             onMouseUp={handleDragStop}
           />
-          <div 
+          <div
             className={`${css.dragBorderRight} drag-handle`}
             onMouseDown={handleDragStart}
             onMouseUp={handleDragStop}
@@ -222,14 +212,14 @@ function TextField({
         <div className={`${css.resizeHandle} ${css.resizeTopRight}`} onMouseDown={createResizeHandler('top-right')} />
         <div className={`${css.resizeHandle} ${css.resizeBottomLeft}`} onMouseDown={createResizeHandler('bottom-left')} />
         <div className={`${css.resizeHandle} ${css.resizeBottomRight}`} onMouseDown={createResizeHandler('bottom-right')} />
-        
+
         {/* Edge handles */}
         <div className={`${css.resizeHandle} ${css.resizeTop}`} onMouseDown={createResizeHandler('top')} />
         <div className={`${css.resizeHandle} ${css.resizeBottom}`} onMouseDown={createResizeHandler('bottom')} />
         <div className={`${css.resizeHandle} ${css.resizeLeft}`} onMouseDown={createResizeHandler('left')} />
         <div className={`${css.resizeHandle} ${css.resizeRight}`} onMouseDown={createResizeHandler('right')} />
       </div>
-      
+
       {/* Text content */}
       {isEditing ? (
         <textarea
@@ -237,23 +227,17 @@ function TextField({
           className={css.textarea}
           value={localContent}
           onChange={handleTextChange}
-          onKeyDown={handleKeyPress}
-          placeholder="Enter main text (optional sub text in parentheses)"
+          onKeyDown={handleKeyDown}
+          placeholder="Enter text"
           spellCheck={false}
         />
       ) : (
         <div className={css.textDisplay}>
-          {mainText && (
+          {localContent ? (
             <div className={css.mainText}>
-              {mainText}
+              {localContent}
             </div>
-          )}
-          {subText && (
-            <div className={css.subText}>
-              ({subText})
-            </div>
-          )}
-          {!mainText && !subText && (
+          ) : (
             <div style={{ color: '#999999', fontStyle: 'italic' }}>
               Click to edit
             </div>
